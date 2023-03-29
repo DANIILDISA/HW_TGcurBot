@@ -12,7 +12,7 @@ keyboard.add(start_button, values_button)
 
 
 @bot.message_handler(commands=['start', 'help'])  # добавляем клавиатуру в стартовое сообщение
-def help(message: telebot.types.Message):
+def command_help(message: telebot.types.Message):
     text = ('Использовать бота:\n'
             '<Имя валюты>\n<имя валюты, в которую вы хотите конвертировать>\n'
             '<количество переводимой валюты>\n\n'
@@ -21,7 +21,7 @@ def help(message: telebot.types.Message):
 
 
 @bot.message_handler(commands=['values'])
-def values(message: telebot.types.Message):
+def command_values(message: telebot.types.Message):
     text = 'Доступные валюты: \n' + '\n'.join(keys.keys())
     bot.reply_to(message, text)
 
@@ -29,12 +29,12 @@ def values(message: telebot.types.Message):
 @bot.message_handler(content_types=['text', ])
 def convert(message: telebot.types.Message):
     try:
-        values = message.text.split()
+        value = message.text.split()
 
-        if len(values) != 3:
+        if len(value) != 3:
             raise ConvertionException('Неверное количество параметров.')
 
-        quote, base, amount = map(str.lower, values)
+        quote, base, amount = map(str.lower, value)
         total_base = CryptoConverter.convert(quote, base, amount)
     except ConvertionException as e:
         bot.reply_to(message, f'Ошибка пользователя:\n{e}', reply_markup=keyboard)
@@ -46,3 +46,4 @@ def convert(message: telebot.types.Message):
 
 
 bot.polling(none_stop=True, interval=0)
+
